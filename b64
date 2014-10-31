@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+var DECODE_OPTION = '-d';
+
+function init() {
+  var args = process.argv.filter(function (arg, i) {
+    return i !== 0 && i !== 1 && arg.trim() !== '';
+  });
+
+  var runtime = {};
+  runtime.isInvalid = !args.length;
+  runtime.isDecodeMode = args[0] === DECODE_OPTION;
+  runtime.inputs = runtime.isDecodeMode ? args.splice(1) : args;
+  return runtime;
+}
+
+function encode(input) {
+  return (new Buffer(input)).toString('base64');
+}
+
+function decode(input) {
+  return (new Buffer(input, 'base64')).toString();
+}
+
+function b64(inputs, isDecodeMode) {
+  inputs.forEach(function (input) {
+    console.log((inputs.length === 1 ? '' : input + ': ') +
+        (isDecodeMode ? decode(input) : encode(input)));
+  });
+}
+
+
+var runtime = init();
+
+if (runtime.isInvalid) {
+  return console.log('Usage: b64 [-d] [string ...]');
+}
+
+b64(runtime.inputs, runtime.isDecodeMode);
